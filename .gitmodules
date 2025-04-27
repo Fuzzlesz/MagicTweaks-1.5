@@ -7,3 +7,6 @@
 [submodule "External/CLibHelper"]
 	path = External/CLibHelper
 	url = https://github.com/SeaSparrowOG/clib-helper
+[submodule "External/CommonLibSSE"]
+	path = External/CommonLibSSE
+	url = http://github.com/Fuzzlesz/CommonLibSSE
