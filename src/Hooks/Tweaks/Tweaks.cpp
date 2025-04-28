@@ -197,7 +197,7 @@ namespace Hooks::Tweaks
 			return true;
 		}
 
-		REL::Relocation<std::uintptr_t> VTABLE{ RE::Offset::PlayerCharacter::Vtbl };
+		REL::Relocation<std::uintptr_t> VTABLE{ RE::PlayerCharacter::VTABLE[0] };
 		_func = VTABLE.write_vfunc(offset, Thunk);
 		logger::info("    >Installed Player VFunc hook."sv);
 		return true;

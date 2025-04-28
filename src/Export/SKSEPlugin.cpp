@@ -29,18 +29,6 @@ namespace
 	}
 }
 
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []()
-	{
-		SKSE::PluginVersionData v{};
-
-		v.PluginVersion(Plugin::VERSION);
-		v.PluginName(Plugin::NAME);
-		v.AuthorName("SeaSparrow"sv);
-		v.UsesAddressLibrary(true);
-
-		return v;
-	}();
-
 extern "C" DLLEXPORT bool SKSEAPI
 SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
@@ -53,7 +41,7 @@ SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 	}
 
 	const auto ver = a_skse->RuntimeVersion();
-	if (ver < SKSE::RUNTIME_1_6_1130) {
+	if (ver < SKSE::RUNTIME_1_5_97) {
 		return false;
 	}
 
@@ -85,7 +73,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	SKSE::Init(a_skse);
 
 	const auto ver = a_skse->RuntimeVersion();
-	if (ver < SKSE::RUNTIME_1_6_1130) {
+	if (ver < SKSE::RUNTIME_1_5_97) {
 		return false;
 	}
 
