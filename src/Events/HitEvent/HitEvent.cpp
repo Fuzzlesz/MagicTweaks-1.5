@@ -32,7 +32,7 @@ namespace Events::HitEvent
 			}
 
 			auto commanderHandle = eventCause->GetCommandingActor();
-			if (!commanderHandle || commanderHandle.get().get() != player) {
+            if (!commanderHandle || commanderHandle.get() != player) {
 				return Control::kContinue;
 			}
 
