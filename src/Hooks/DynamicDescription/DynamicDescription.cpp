@@ -19,7 +19,7 @@ namespace Hooks::DynamicDescription
 	}
 
 	bool SpellDescriptionPatch::InstallSpellDescriptionPatch() {
-		REL::Relocation<std::uintptr_t> target{ REL::ID(51898), 0x5DC };
+		REL::Relocation<std::uintptr_t> target{ REL::ID(51020), 0x5DC };
 		if (!REL::make_pattern<"E8">().match(target.address())) {
 			logger::critical("    >Failed to validate the hook pattern."sv);
 			return false;
@@ -41,7 +41,7 @@ namespace Hooks::DynamicDescription
 	}
 
 	bool SpellTomeDescriptionPatch::InstallSpellTomeDescriptionPatch() {
-		REL::Relocation<std::uintptr_t> target{ REL::ID(51897), 0xF5C };
+		REL::Relocation<std::uintptr_t> target{ REL::ID(51019), 0xDA1 };
 		if (!REL::make_pattern<"E8">().match(target.address())) {
 			logger::critical("    >Failed to validate the hook pattern."sv);
 			return false;
@@ -63,7 +63,7 @@ namespace Hooks::DynamicDescription
 	}
 
 	bool EnchantmentDescriptionPatch::InstallEnchantmentDescriptionPatch() {
-		REL::Relocation<std::uintptr_t> target{ REL::ID(51897), 0x1377 };
+		REL::Relocation<std::uintptr_t> target{ REL::ID(51019), 0x11BB };
 		if (!REL::make_pattern<"E8">().match(target.address())) {
 			logger::critical("    >Failed to validate the hook pattern."sv);
 			return false;

@@ -16,7 +16,7 @@ namespace Hooks::Conditions
 
 	bool GetActorItemCountHook::Install() {
 		logger::info("    >Installing GetItemCount hook."sv);
-		REL::Relocation<std::uintptr_t> target{ RE::Offset::TESObjectREFR::GetItemCount, 0xAE };
+		REL::Relocation<std::uintptr_t> target{ RE::Offset::TESObjectREFR::GetItemCount, 0x9A };
 		if (!REL::make_pattern<"E8">().match(target.address())) {
 			logger::critical("      >Failed to match expected pattern (E8)."sv);
 			return false;
