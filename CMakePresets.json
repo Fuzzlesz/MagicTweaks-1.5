@@ -1,10 +1,10 @@
 {
-    "version": 3,
-    "cmakeMinimumRequired": {
-        "major": 3,
-        "minor": 21,
-        "patch": 0
-    },
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "cmake-dev",
@@ -12,6 +12,13 @@
       "cacheVariables": {
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
         "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /external:anglebrackets /external:W0 $penv{CXXFLAGS}"
+      },
+      "errors": {
+        "deprecated": true
+      },
+      "warnings": {
+        "deprecated": true,
+        "dev": true
       }
     },
     {
@@ -37,86 +44,57 @@
       "toolset": "v143"
     },
     {
-      "name": "release",
+      "name": "se",
       "hidden": true,
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build"
+    },
+    {
+      "name": "ae",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/buildae",
       "cacheVariables": {
-        "FULL_RELEASE": true,
-        "COPY_BSA": true,
-        "COPY_PSC": true
+        "BUILD_SKYRIMAE": true
       }
     },
     {
-      "name": "test",
+      "name": "vr",
       "hidden": true,
-      "binaryDir": "${sourceDir}/build-test",
+      "binaryDir": "${sourceDir}/buildvr",
       "cacheVariables": {
-        "COPY_PEX": true,
-        "COPY_BSA": true,
-        "COPY_PSC": true
+        "BUILD_SKYRIMVR": true
       }
     },
     {
-      "name": "outdated",
-      "hidden": true,
-      "binaryDir": "${sourceDir}/build-outdated",
-      "cacheVariables": {
-        "FULL_RELEASE": true,
-        "OUTDATED": true,
-        "COPY_BSA": true,
-        "COPY_PSC": true
-      }
-    },
-    {
-      "name": "vs2022-windows-vcpkg-release",
+      "name": "vs2022-windows-vcpkg-se",
       "inherits": [
         "cmake-dev",
         "vcpkg",
         "windows",
         "vs2022",
-        "release"
-      ],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+        "se"
+      ]
     },
     {
-      "name": "Outdated",
+      "name": "vs2022-windows-vcpkg-ae",
       "inherits": [
         "cmake-dev",
         "vcpkg",
         "windows",
         "vs2022",
-        "outdated"
-      ],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "vs2022-windows-vcpkg-test",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows",
-        "vs2022",
-        "test"
-      ],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+        "ae"
+      ]
     }
   ],
-    "buildPresets": [
-        {
-            "name": "Release",
-            "configurePreset": "vs2022-windows-vcpkg-release",
-            "configuration": "Release"
-        },
-        {
-            "name": "Test",
-            "configurePreset": "vs2022-windows-vcpkg-test",
-            "configuration": "Debug"
-        }
-    ]
+  "buildPresets": [
+    {
+      "name": "vs2022-windows-vcpkg-ae",
+      "configurePreset": "vs2022-windows-vcpkg-ae",
+      "configuration": "Release"
+    },
+    {
+      "name": "vs2022-windows-vcpkg-se",
+      "configurePreset": "vs2022-windows-vcpkg-se",
+      "configuration": "Release"
+    }
+  ]
 }
