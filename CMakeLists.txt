@@ -5,7 +5,7 @@ option(OUTDATED "Applies 1.5.97 offsets/IDs." ON)
 # -------- Project ----------
 project(
 	MagicTweaks
-	VERSION 2.2.0
+	VERSION 2.2.2
 	LANGUAGES CXX
 )
 
