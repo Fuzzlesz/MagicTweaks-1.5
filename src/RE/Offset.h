@@ -8,7 +8,7 @@ namespace RE::Offset
 	}
 	namespace AnonymousNamespace
 	{
-		constexpr auto ResetElapsedTimeMagicEffects = REL::ID(34581);
+		constexpr auto ResetElapsedTimeMagicEffects = REL::ID(33785);
 	}
 	namespace TESObjectREFR
 	{
