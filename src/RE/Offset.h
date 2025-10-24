@@ -6,6 +6,10 @@ namespace RE::Offset
 	{
 		constexpr auto DoDamage = REL::ID(36345);
 	}
+	namespace AnonymousNamespace
+	{
+		constexpr auto ResetElapsedTimeMagicEffects = REL::ID(34581);
+	}
 	namespace TESObjectREFR
 	{
 		constexpr auto GetItemCount = REL::ID(20985);

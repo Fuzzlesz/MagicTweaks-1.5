@@ -27,5 +27,13 @@ namespace Hooks
 
 			inline static REL::Relocation<decltype(&PlayerThunk)> _func;
 		};
+
+		struct CloakArchetypeFix
+		{
+			static bool InstallCloakFix();
+			static void ResetCloakEffect(RE::ActiveEffect* a_effect);
+
+			inline static REL::Relocation<decltype(&ResetCloakEffect)> _func;
+		};
 	}
 }

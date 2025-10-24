@@ -1,6 +1,10 @@
 #include "Fixes.h"
 
+#include "RE/Offset.h"
+#include "RE/BGSEntryPointFunctionDataTwoValue.h"
 #include "Settings/INI/INISettings.h"
+
+#include <xbyak.h>
 
 namespace
 {
@@ -85,6 +89,7 @@ namespace Hooks {
 			bool success = true;
 			success &= Character::InstallCharacterFixes();
 			success &= Player::InstallPlayerFixes();
+			success &= CloakArchetypeFix::InstallCloakFix();
 
 			return success;
 		}
@@ -103,12 +108,12 @@ namespace Hooks {
 			return true;
 		}
 
-		bool Player::PlayerThunk(RE::MagicTarget* a_this, 
-			RE::Actor* a_actor, 
-			RE::MagicItem* a_magicItem, 
+		bool Player::PlayerThunk(RE::MagicTarget* a_this,
+			RE::Actor* a_actor,
+			RE::MagicItem* a_magicItem,
 			const RE::Effect* a_effect)
 		{
-			return AllowAbsorb(a_this, a_actor, a_magicItem, a_effect) && 
+			return AllowAbsorb(a_this, a_actor, a_magicItem, a_effect) &&
 				_func(a_this, a_actor, a_magicItem, a_effect);
 		}
 
@@ -117,8 +122,106 @@ namespace Hooks {
 			RE::MagicItem* a_magicItem,
 			const RE::Effect* a_effect)
 		{
-			return AllowAbsorb(a_this, a_actor, a_magicItem, a_effect) && 
+			return AllowAbsorb(a_this, a_actor, a_magicItem, a_effect) &&
 				_func(a_this, a_actor, a_magicItem, a_effect);
+		}
+
+		bool CloakArchetypeFix::InstallCloakFix() {
+			logger::info("    >Installing the Cloak Archetype Fix..."sv);
+			const bool shouldInstall = Settings::INI::GetSetting<bool>(Settings::INI::FIX_CLOAKS).value_or(false);
+			if (!shouldInstall) {
+				logger::info("      User chose not to install the fix."sv);
+				return true;
+			}
+
+			REL::Relocation<std::uintptr_t> target{ RE::Offset::AnonymousNamespace::ResetElapsedTimeMagicEffects, 0x72 };
+			if (!REL::make_pattern<"E8">().match(target.address())) {
+				logger::critical("    >Failed to validate the hook pattern."sv);
+				return false;
+			}
+			auto& trampoline = SKSE::GetTrampoline();
+			_func = trampoline.write_call<5>(target.address(), &ResetCloakEffect);
+			return true;
+		}
+
+		void CloakArchetypeFix::ResetCloakEffect(RE::ActiveEffect* a_effect)
+		{
+			// Effect might be nullptr, but isn't checked in vanilla
+			if (!a_effect ||
+				a_effect->castingSource != RE::MagicSystem::CastingSource::kInstant ||
+				!a_effect->GetBaseObject())
+			{
+				_func(a_effect);
+				return;
+			}
+
+			const auto* base = a_effect->GetBaseObject();
+			if (!base ||
+				base->data.castingType != RE::MagicSystem::CastingType::kConcentration ||
+				base->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kRecover))
+			{
+				_func(a_effect);
+				return;
+			}
+
+			a_effect->flags.reset(RE::ActiveEffect::Flag::kDual);
+			a_effect->elapsedSeconds = 0.0f;
+
+			// Attempt to re-apply magnitude from perks
+			auto* caster = a_effect->caster.get().get();
+			auto* target = a_effect->target;
+			auto* targetAsActor = target ? target->GetTargetAsActor() : nullptr;
+			auto* spell = a_effect->spell ? a_effect->spell->As<RE::SpellItem>() : nullptr;
+			if (!caster || !targetAsActor || !spell || spell->effects.empty()) {
+				return;
+			}
+
+			float magnitude = 0.0f;
+			bool foundMagnitude = false;
+			auto begin = spell->effects.begin();
+			auto end = spell->effects.end();
+			for (auto it = begin; !foundMagnitude && it != end; ++it) {
+				auto* effectItem = *it;
+				if (!effectItem) {
+					continue;
+				}
+				if (base != effectItem->baseEffect) {
+					continue;
+				}
+
+				foundMagnitude = true;
+				magnitude = effectItem->GetMagnitude();
+			}
+			if (!foundMagnitude) {
+				return;
+			}
+
+			bool reverse = false;
+			RE::BGSEntryPoint::HandleEntryPoint(
+				RE::BGSEntryPointPerkEntry::EntryPoint::kModSpellMagnitude,
+				caster,
+				spell,
+				targetAsActor,
+				&magnitude);
+
+			if (base) {
+				switch (base->GetArchetype()) {
+				case RE::EffectSetting::Archetype::kValueModifier:
+				case RE::EffectSetting::Archetype::kAbsorb:
+				case RE::EffectSetting::Archetype::kDualValueModifier:
+				case RE::EffectSetting::Archetype::kAccumulateMagnitude:
+				case RE::EffectSetting::Archetype::kPeakValueModifier:
+					reverse = true;
+					break;
+				}
+			}
+
+			if (reverse &&
+				base->data.flags.any(RE::EffectSetting::EffectSettingData::Flag::kDetrimental))
+			{
+				magnitude = -magnitude;
+			}
+			a_effect->magnitude = magnitude;
 		}
 	}
 }
